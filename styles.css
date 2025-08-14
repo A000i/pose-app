@@ -1,0 +1,32 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  text-align: center;
+}
+
+.video-container {
+  position: relative;
+  width: 480px;   /* PCでもタブレットでも同じくらい */
+  max-width: 90%; /* 画面幅に応じて縮小 */
+  margin: 0 auto;
+}
+
+
+video, canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+input[type="file"], button {
+  font-size: 1.2rem;
+  padding: 10px 20px;
+  margin: 10px 0;
+}
