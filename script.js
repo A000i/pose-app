@@ -2,6 +2,10 @@ let detector;
 const video = document.getElementById('video');
 const canvas = document.getElementById('output');
 const ctx = canvas.getContext('2d');
+const playBtn = document.getElementById('playBtn');
+
+let running = false; // 推定が動作中かどうか
+let rafId = null;    // requestAnimationFrame のID
 
 // detector 初期化
 async function initDetector() {
@@ -11,30 +15,46 @@ async function initDetector() {
 }
 initDetector();
 
-// 動画を選択したとき
+// 動画選択
 document.getElementById('videoUpload').addEventListener('change', (event) => {
   const videoFile = event.target.files[0];
   if (!videoFile) return;
 
   video.src = URL.createObjectURL(videoFile);
+  stopPoseDetection(); // 新しい動画を選んだら一旦停止
 });
 
-// 再生ボタン
-document.getElementById('playBtn').addEventListener('click', async () => {
+// 再生 / 停止ボタン
+playBtn.addEventListener('click', async () => {
   if (!detector) {
     alert("モデルを読み込み中です。少し待ってから再生してください。");
     return;
   }
 
-  await video.play();
+  if (!running) {
+    // ▶ 再生開始
+    await video.play();
+    startPoseDetection();
+    playBtn.textContent = "⏸ 停止";
+  } else {
+    // ⏸ 停止
+    video.pause();
+    stopPoseDetection();
+    playBtn.textContent = "▶ 再生";
+  }
+});
 
-  // キャンバスサイズを設定
+// 推定ループ開始
+function startPoseDetection() {
+  running = true;
+
   const rect = video.getBoundingClientRect();
   canvas.width = rect.width;
   canvas.height = rect.height;
 
-  // 推定ループ
   async function poseDetectionFrame() {
+    if (!running) return; // 停止したら抜ける
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
@@ -47,15 +67,22 @@ document.getElementById('playBtn').addEventListener('click', async () => {
       }
     }
 
-    if (!video.paused && !video.ended) {
-      requestAnimationFrame(poseDetectionFrame);
-    }
+    rafId = requestAnimationFrame(poseDetectionFrame);
   }
 
   poseDetectionFrame();
-});
+}
 
-// --- 描画関数（ダミー。既に定義済みなら不要）---
+// 推定ループ停止
+function stopPoseDetection() {
+  running = false;
+  if (rafId) {
+    cancelAnimationFrame(rafId);
+    rafId = null;
+  }
+}
+
+// --- 描画関数（ダミー）---
 function drawKeypoints(keypoints, ctx) {
   for (const kp of keypoints) {
     if (kp.score > 0.3) {
@@ -68,5 +95,5 @@ function drawKeypoints(keypoints, ctx) {
 }
 
 function drawBodyLines(keypoints, ctx) {
-  // ここに接続線の描画処理を書く
+  // 接続線を描く処理（任意）
 }
