@@ -1,22 +1,12 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>骨格推定アプリ</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#ffffff">
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js');
-    }
-  </script>
-</head>
 <body>
   <h1>動画で骨格推定</h1>
   <input type="file" id="videoUpload" accept="video/*"/>
-  <button id="playBtn">▶ 再生</button>
+
+  <div>
+    <button id="videoPlayBtn">▶ 動画再生</button>
+    <button id="posePlayBtn">▶ 骨格推定開始</button>
+  </div>
+
   <div class="video-container">
     <video id="video" controls></video>
     <canvas id="output"></canvas>
@@ -27,6 +17,3 @@
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection/dist/movenet.min.js"></script>
   <script src="script.js"></script>
 </body>
-</html>
-
-
