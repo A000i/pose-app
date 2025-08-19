@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoveNet カメラ骨格推定</title>
+
+    <!-- TensorFlow.js & MoveNet -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection"></script>
+
+    <!-- 自作CSS -->
+    <link href="./styles.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <h1>カメラから骨格推定</h1>
+
+    <div id="overlayContainer">
+        <!-- カメラ映像 -->
+        <video id="videoPlayer" width="640" height="480" autoplay playsinline></video>
+        <!-- オーバーレイ用キャンバス -->
+        <canvas id="overlayCanvas" width="640" height="480"></canvas>
+    </div>
+
+    <!-- 自作JavaScript -->
+    <script src="./camera.js"></script>
+
+</body>
+</html>
