@@ -1,27 +1,66 @@
 <body>
-  <h1>動画で骨格推定</h1>
-  <input type="file" id="videoUpload" accept="video/*"/>
 
-  <div>
-    <button id="videoPlayBtn">▶ 動画再生</button>
-    <button id="posePlayBtn">▶ 骨格推定開始</button>
-  </div>
+  <h1>動画アップロード＆コメント</h1>
+  <button id="google-login-btn">Googleでログイン</button><br><br>
 
-  <div class="video-container">
-    <video id="video" controls></video>
-    <canvas id="output"></canvas>
-  </div>
+  <!-- 動画アップロードエリア -->
+  <section id="uploadSection" style="border:1px solid #ccc;padding:1em;margin-bottom:1em;">
+    <h2>1. 動画をアップロード</h2>
+    <input type="file" id="videoUpload" accept="video/*"/>
+    <input type="text" id="videoTitle" placeholder="動画タイトル" style="margin-left:1em;">
+    <button id="uploadVideoBtn">アップロード</button>
+    <div id="uploadStatus"></div>
+    <div style="border:1px solid #aaa;padding:1em;margin-top:1em;display:flex;flex-direction:column;align-items:center;">
+      <div id="videoBtnArea" style="width:100%;text-align:left;">
+        <button id="videoPlayBtn">▶ 動画再生</button>
+        <button id="posePlayBtn">▶ 骨格推定開始</button>
+      </div>
+      <div class="video-container" style="margin-top:1em;">
+        <video id="video" controls style="max-width:100%;"></video>
+        <canvas id="output"></canvas>
+      </div>
+    </div>
+  </section>
 
-  <!-- ここからコメントカルテUI -->
-  <div id="commentSection">
-    <h2>コメントカルテ</h2>
-    <div id="userInfo">ログインしてコメントしてください</div>
-    <button id="loginBtn">Googleでログイン</button>
-    <textarea id="commentInput" placeholder="コメントを入力"></textarea>
-    <button id="sendComment">送信</button>
-    <ul id="commentList"></ul>
-  </div>
-  <!-- ここまでコメントカルテUI -->
+
+  <!-- Firebase SDK（互換レイヤー）を追加 -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+  <!-- Firebaseの初期化（互換レイヤー用） -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCScgoBWjovuJA9a7M3upmWwXLE6GkZJTw",
+      authDomain: "pose-comment-app.firebaseapp.com",
+      projectId: "pose-comment-app",
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+
+  <!-- Googleログイン処理（互換レイヤー用） -->
+  <script>
+    const provider = new firebase.auth.GoogleAuthProvider();
+    // 2つのボタンどちらにも同じGoogleログイン処理を付与
+    ["google-login-btn", "loginBtn"].forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener("click", () => {
+          firebase.auth().signInWithPopup(provider)
+            .then((result) => {
+              const user = result.user;
+              alert("ログイン成功: " + user.displayName);
+            })
+            .catch((error) => {
+              console.error("ログイン失敗:", error);
+              alert("ログインに失敗しました");
+            });
+        });
+      }
+    });
+  </script>
+
+
+
 
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.16.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection"></script>
@@ -32,6 +71,29 @@
 
   <!-- コメント＋Firebaseスクリプト -->
   <script type="module" src="main.js"></script>
+
+    <!-- 選択中の動画プレビューとコメント -->
+  <section id="selectedVideoSection" style="border:1px solid #ccc;padding:1em;">
+    <h2>2. 選択中の動画</h2>
+    <video id="selectedVideo" controls style="max-width:100%;display:none;"></video>
+    <div id="selectedVideoTitle" style="font-weight:bold;margin:0.5em 0;"></div>
+
+
+    <!-- コメントカルテUI -->
+    <div id="commentSection">
+      <h3>コメント</h3>
+      <div id="userInfo">ログインしてコメントしてください</div>
+  <textarea id="commentInput" placeholder="コメントを入力"></textarea>
+  <button id="sendComment">送信</button>
+      <ul id="commentList"></ul>
+    </div>
+  </section>
+
+  <!-- 動画リストエリア -->
+  <section id="videoListSection" style="border:1px solid #ccc;padding:1em;margin-bottom:1em;">
+    <h2>3. アップロード済み動画一覧</h2>
+    <div id="videoList" style="display:flex;flex-wrap:wrap;gap:1em;"></div>
+  </section>
 
 </body>
 </html>
